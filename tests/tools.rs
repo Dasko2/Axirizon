@@ -106,7 +106,8 @@ fn erase_clears_selection() {
 
 #[test]
 fn symmetry_mirrors_the_ghost() {
-    let (mut w, mut s) = setup(6);
+    let (mut w, mut s) = setup(1);
+    s.handle(&mut w, Input::Slot(6));
     s.handle(&mut w, Input::RightClick(hit(5)));
     s.handle(&mut w, Input::Slot(1));
     s.handle(&mut w, scroll(2));
