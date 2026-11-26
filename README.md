@@ -5,6 +5,8 @@ Code original, sans lien avec Axiom ni son auteur.
 
 **État : pas encore jouable.** La logique des outils est là ; le branchement
 sur Horizon (clics, molette, écriture des blocs, dessin du fantôme) reste à écrire.
+Au 26 novembre 2026, le dépôt officiel `horizon-rust/horizon`, qui fournit le kit
+de mods, répond 404.
 
 | Case | Outil | Commandes |
 |---|---|---|
