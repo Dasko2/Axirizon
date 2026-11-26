@@ -12,22 +12,7 @@ jobs:
   core:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: rustup update stable --no-self-update
       - run: cargo test
 
-  # Generates Horizon's official native template, so the game adapter can be
-  # written against the real API.
-  horizon-template:
-    runs-on: ubuntu-latest
-    steps:
-      - run: rustup update stable --no-self-update
-      - run: cargo install --locked --git https://github.com/horizon-rust/horizon cargo-horizon-mod
-      - run: cargo horizon-mod new axirizon --template native
-      - run: find axirizon -type f -not -path '*/target/*' -not -path '*/.horizon/*'
-      - run: cat axirizon/horizon-mod.toml axirizon/Cargo.toml axirizon/src/*.rs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: horizon-template
-          path: axirizon
-          include-hidden-files: true

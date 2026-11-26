@@ -88,7 +88,10 @@ impl Session {
                 }
             }
             Input::LeftClick(Some(hit)) => match self.tool {
-                Tool::Extrude => self.commit(world, tools::shrink(world, hit.pos, hit.side)),
+                Tool::Extrude => {
+                    let plan = tools::shrink(world, hit.pos, hit.side);
+                    self.commit(world, plan);
+                }
                 Tool::Symmetry => self.symmetry = None,
                 _ => {
                     self.first = Some(hit.pos);
