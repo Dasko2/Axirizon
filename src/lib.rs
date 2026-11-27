@@ -154,7 +154,6 @@ impl Hooks for Mod {
         let name = key.rsplit('.').next().unwrap_or("");
         let down = !matches!(event.action, KeyAction::Release);
         let press = matches!(event.action, KeyAction::Press);
-        let ctrl = format!("{:?}", event.modifiers);
         let mut c = lock(&self.client);
         if name == "b" && press {
             c.active = !c.active;
@@ -175,7 +174,7 @@ impl Hooks for Mod {
             _ => None,
         };
         // Bit 2 of the modifiers is Control.
-        let control = ctrl_held(&ctrl);
+        let control = event.modifiers & 2 != 0;
         if let Some(a) = axis {
             c.lock = (down && !control).then_some(a);
         }
@@ -295,11 +294,4 @@ impl Hooks for Mod {
             let _ = event.draw.lines(batch);
         }
     }
-}
-
-/// GLFW modifiers: Control is 2. Read from the debug form so it works
-/// whether the API gives a number or a wrapper.
-fn ctrl_held(modifiers: &str) -> bool {
-    let digits: String = modifiers.chars().filter(char::is_ascii_digit).collect();
-    digits.parse::<u32>().is_ok_and(|m| m & 2 != 0)
 }

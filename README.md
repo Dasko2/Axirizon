@@ -1,14 +1,26 @@
 # Axirizon
 
-Outils de construction avec fantôme des blocs pour Horizon, inspirés d'Axiom.
-Code original, sans lien avec Axiom ni son auteur.
+Mod natif pour Horizon : outils de construction avec fantôme des blocs, inspirés
+d'Axiom. Code original, sans lien avec Axiom ni son auteur.
 
-**État : pas encore jouable.** La logique des outils est là ; le branchement
-sur Horizon (clics, molette, écriture des blocs, dessin du fantôme) reste à écrire.
-Au 26 novembre 2026, le dépôt officiel `horizon-rust/horizon`, qui fournit le kit
-de mods, répond 404.
+**Jamais essayé en jeu.** GitHub Actions compile le mod, lance les tests de la
+logique des outils et vérifie le paquet `.hmod`.
 
-| Case | Outil | Commandes |
+## Récupérer et installer
+
+1. Onglet **Actions** > dernier « Build » vert > **Artifacts** > `axirizon-hmod`.
+2. Décompresser : il contient `axirizon.hmod`.
+3. L'ajouter dans la page Mods du launcher et autoriser les mods natifs.
+
+Version visée : Minecraft 26.3, commit Horizon `ae632ed` (source :
+`rdbtCVS/horizon`). Le launcher compile le mod lui-même et a besoin du kit de
+cette version exacte.
+
+## En jeu (solo, Overworld)
+
+**B** active ou désactive. Chiffres **1 à 7** : outil.
+
+| Touche | Outil | Commandes |
 |---|---|---|
 | 1 | Move | clic gauche / droit : coins ; molette : déplacer ; clic droit : valider |
 | 2 | Clone | comme Move, sans effacer la source |
@@ -18,8 +30,15 @@ de mods, répond 404.
 | 6 | Erase | deux coins, puis clic droit |
 | 7 | Symmetry | clic droit : X, Z, les deux ; clic gauche : désactiver |
 
-Annuler / refaire, rotation et miroir sont gérés. La rotation et le miroir
-déplacent les blocs mais ne tournent pas encore leur orientation (escaliers, bûches).
-La sélection par faces au clic molette et la copie des entités ne sont pas faites.
+Ctrl+Z / Ctrl+Y : annuler, refaire. Ctrl+R : tourner. Ctrl+F : miroir.
+Retour arrière : annuler la sélection. X, Y ou Z maintenu : bloquer un axe.
 
-La compilation et les tests passent uniquement par GitHub Actions.
+## Limites
+
+- Les clics visent à la portée normale du joueur.
+- Le fantôme est fait de cubes colorés (bleu : ajout, rouge : retrait), sans les
+  textures ; seule une partie des très grandes formes est dessinée.
+- Le contenu des coffres et les entités ne sont pas copiés ; déplacer un coffre
+  fait tomber son contenu.
+- La rotation et le miroir ne tournent pas l'orientation des blocs.
+- Les chiffres changent aussi la case de la hotbar du jeu.
