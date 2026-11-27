@@ -232,7 +232,18 @@ impl Hooks for Mod {
         lock(&self.client).look = look;
     }
 
-    /// The tool list, in the top left corner, with the selected one marked.
+    /// While active, the vanilla hotbar gives way to the tool bar.
+    fn gui_layer_pre(&self, _: &dyn ClientHost, event: &mut GuiLayerPreEvent<'_>) -> Flow {
+        let layer: &str = event.layer.as_ref();
+        let name = layer.strip_prefix("minecraft:").unwrap_or(layer);
+        if matches!(name, "hotbar" | "selected_item_name") && lock(&self.client).active {
+            Flow::Cancel
+        } else {
+            Flow::Continue
+        }
+    }
+
+    /// The tool bar, where the hotbar is.
     fn render_gui_post(&self, _: &dyn ClientHost, event: &mut RenderGuiPostEvent<'_>) {
         let (active, selected) = {
             let c = lock(&self.client);
@@ -241,11 +252,22 @@ impl Hooks for Mod {
         if !active {
             return;
         }
-        event.draw.fill([2.0, 2.0, 96.0, 14.0 + 10.0 * Tool::HOTBAR.len() as f32], 0x90000000);
-        event.draw.text("Axirizon (B)", [6.0, 5.0], 0xFFFFD020, true);
+        const SLOT: f32 = 48.0;
+        const HEIGHT: f32 = 24.0;
+        let [width, height] = event.draw.size();
+        let left = ((width - SLOT * Tool::HOTBAR.len() as f32) / 2.0).floor();
+        let top = height - HEIGHT - 1.0;
         for (i, tool) in Tool::HOTBAR.iter().enumerate() {
-            let (mark, color) = if i == selected { (">", 0xFF80E0FF) } else { (" ", 0xFFFFFFFF) };
-            event.draw.text(&format!("{mark} {} {tool:?}", i + 1), [6.0, 16.0 + 10.0 * i as f32], color, true);
+            let x = left + SLOT * i as f32;
+            let chosen = i == selected;
+            // A frame (white around the chosen tool), then the slot inside it.
+            event.draw.fill([x, top, SLOT, HEIGHT], if chosen { 0xFFFFFFFF } else { 0xFF555555 });
+            let inner = if chosen { 0xFF305878 } else { 0xE0202020 };
+            event.draw.fill([x + 1.0, top + 1.0, SLOT - 2.0, HEIGHT - 2.0], inner);
+            for (line, y, color) in [(format!("{}", i + 1), 3.0, 0xFFA0A0A0), (format!("{tool:?}"), 13.0, 0xFFFFFFFF)] {
+                let x = x + ((SLOT - event.draw.text_width(&line)) / 2.0).floor();
+                event.draw.text(&line, [x, top + y], color, true);
+            }
         }
     }
 

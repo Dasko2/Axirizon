@@ -12,13 +12,13 @@ logique des outils et vérifie le paquet `.hmod`.
 2. Décompresser : il contient `axirizon.hmod`.
 3. L'ajouter dans la page Mods du launcher et autoriser les mods natifs.
 
-Version visée : Minecraft 26.3, version `nightly-2026-11-20-0a875da` (source :
+Version visée : Minecraft 26.3, version `nightly-2026-11-22-f1bb66f` (source :
 `rdbtCVS/horizon`). Le launcher compile le mod lui-même et a besoin du kit de
 cette version exacte.
 
 ## En jeu (solo, Overworld)
 
-**B** active ou désactive. Chiffres **1 à 7** : outil. La liste des outils s'affiche en haut à gauche.
+**B** active ou désactive. Chiffres **1 à 7** : outil. La barre des outils remplace la hotbar en bas de l'écran.
 
 | Touche | Outil | Commandes |
 |---|---|---|
