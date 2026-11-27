@@ -12,6 +12,9 @@ pub mod session;
 pub mod tools;
 pub mod world;
 
+#[cfg(test)]
+mod tests;
+
 use std::sync::{Mutex, MutexGuard};
 
 use mod_api::*;
@@ -90,7 +93,7 @@ impl World for Level<'_> {
                 None => return,
             }
         };
-        self.level.set_block(self.host, [p.x, p.y, p.z], state, BlockUpdateFlags::CLIENTS);
+        let _ = self.level.set_block(self.host, [p.x, p.y, p.z], state, BlockUpdateFlags::CLIENTS);
     }
 }
 

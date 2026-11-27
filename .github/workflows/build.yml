@@ -27,7 +27,8 @@ jobs:
       - name: Place the mod in the Horizon workspace
         run: |
           mkdir -p horizon/mods/axirizon
-          cp -r axirizon/Cargo.toml axirizon/src axirizon/tests horizon/mods/axirizon/
+          # The whole repository, as the launcher sees it when installing from GitHub.
+          cp -r axirizon/. horizon/mods/axirizon/
           sed -i 's#\.horizon/sdk/api/crates/horizon-mod-api#../../crates/horizon-mod-api#' horizon/mods/axirizon/Cargo.toml
           sed -i '0,/^members = \[/s##members = [\n    "mods/axirizon",#' horizon/Cargo.toml
       - name: Compile and test against Horizon's mod API
@@ -36,10 +37,17 @@ jobs:
           rustup toolchain install 1.99.1 --profile minimal
           rustup override set 1.99.1
           cargo test -p mod-axirizon
+      - name: Pack the repository with Horizon's own packer
+        working-directory: horizon
+        run: |
+          cargo build -p cargo-horizon-mod
+          tool="$PWD/target/debug/cargo-horizon-mod"
+          cd mods/axirizon
+          "$tool" horizon-mod build
       - name: Package and check the .hmod
         run: |
           mkdir dist
-          (cd axirizon && zip -r ../dist/axirizon.hmod horizon-mod.toml Cargo.toml src)
+          (cd axirizon && zip -r ../dist/axirizon.hmod horizon-mod.toml Cargo.toml README.md src)
           cd horizon
           cargo run -p cargo-horizon-mod -- check ../dist/axirizon.hmod
       - uses: actions/upload-artifact@v6

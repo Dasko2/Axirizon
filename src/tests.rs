@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use mod_axirizon::geom::{Dir, Pos};
-use mod_axirizon::session::{Hit, Input, Session};
-use mod_axirizon::world::{Block, World, AIR};
+use crate::geom::{Dir, Pos};
+use crate::session::{Hit, Input, Session};
+use crate::world::{Block, World, AIR};
 
 #[derive(Default)]
 struct Mem(HashMap<Pos, Block>);
