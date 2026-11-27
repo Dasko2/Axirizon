@@ -1,0 +1,29 @@
+name: Probe API
+
+on:
+  push:
+    paths: [.github/workflows/probe.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: rdbtCVS/horizon
+          ref: ae632edf48f6cae3ba52a5c81523ec712488c9cc
+          persist-credentials: false
+      - run: rustup toolchain install 1.99.1 --profile minimal && rustup override set 1.99.1
+      - run: cargo build --locked -p horizon-mod-api
+      - name: Collect the generated API
+        run: |
+          mkdir out
+          find target/debug -name '*.rs' -path '*horizon-mod*' -exec cp --backup=numbered {} out/ \;
+          ls -la out
+      - uses: actions/upload-artifact@v6
+        with:
+          name: api
+          path: out
