@@ -22,7 +22,7 @@ use crate::tools::Tool;
 use crate::world::{Block, World, AIR};
 
 /// Most ghost blocks drawn at once.
-const MAX_DRAWN: usize = 1_500;
+const MAX_DRAWN: usize = 680;
 
 #[derive(Default)]
 struct Client {
@@ -119,8 +119,7 @@ fn dir_from_look(yaw: f32, pitch: f32) -> Dir {
 fn target(host: &dyn ClientHost) -> Option<Hit> {
     match host.crosshair_target()? {
         CrosshairTarget::Block { pos, hit, .. } => {
-            let [x, y, z]: [i32; 3] = pos.into();
-            Some(Hit { pos: Pos::new(x, y, z), side: dir_from_face(hit.face)? })
+            Some(Hit { pos: Pos::new(pos.x, pos.y, pos.z), side: dir_from_face(hit.face)? })
         }
         _ => None,
     }
@@ -266,11 +265,19 @@ impl Hooks for Mod {
         preview.ghost = session.ghost().iter().take(MAX_DRAWN).map(|(&p, &b)| (p, b == AIR)).collect();
     }
 
-    fn submit_custom_geometry(&self, _view: &WorldRenderView, draw: &mut dyn WorldDrawContext) {
+    fn submit_custom_geometry(&self, _: &dyn ClientHost, event: &mut SubmitCustomGeometryEvent<'_>) {
         if !lock(&self.client).active {
             return;
         }
         let preview = lock(&self.preview);
+        if let Some(s) = preview.selection {
+            let (lo, hi) = (cube(s.min, 0.01), cube(s.max, 0.01));
+            let v: [[f64; 3]; 8] = std::array::from_fn(|i| {
+                std::array::from_fn(|k| if i & (1 << k) == 0 { lo[0][k] } else { hi[7][k] })
+            });
+            let edges = EDGES.map(|e| WorldLine::new(v[e[0]], v[e[1]], 0xFFFFD020, 3.0, WorldDepth::ThroughWalls));
+            let _ = event.draw.lines(&edges);
+        }
         let mut quads = Vec::new();
         let mut lines = Vec::new();
         for &(p, removed) in &preview.ghost {
@@ -282,18 +289,10 @@ impl Hooks for Mod {
         }
         // A refused batch (view capacity) only hides that part of the ghost.
         for batch in quads.chunks(600) {
-            let _ = draw.quads(batch);
+            let _ = event.draw.quads(batch);
         }
-        for batch in lines.chunks(1_200) {
-            let _ = draw.lines(batch);
-        }
-        if let Some(s) = preview.selection {
-            let (lo, hi) = (cube(s.min, 0.01), cube(s.max, 0.01));
-            let v: [[f64; 3]; 8] = std::array::from_fn(|i| {
-                std::array::from_fn(|k| if i & (1 << k) == 0 { lo[0][k] } else { hi[7][k] })
-            });
-            let edges = EDGES.map(|e| WorldLine::new(v[e[0]], v[e[1]], 0xFFFFD020, 3.0, WorldDepth::ThroughWalls));
-            let _ = draw.lines(&edges);
+        for batch in lines.chunks(240) {
+            let _ = event.draw.lines(batch);
         }
     }
 }
