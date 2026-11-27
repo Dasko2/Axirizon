@@ -1,6 +1,6 @@
 id = "axirizon"
 name = "Axirizon"
-version = "0.2.0"
+version = "0.2.1"
 description = "Outils de construction avec fantome des blocs (touche B)"
 authors = ["Dasko2"]
 api = "0.2"
@@ -9,5 +9,5 @@ capabilities = ["registries"]
 
 [native]
 game = "26.3"
-horizon = "f1bb66f353cf67f2aa4665293fc75c8d91186fc7"
+horizon = "0a875da91dbb0fdcb7ba8c42c11341aa229af51a"
 mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"
