@@ -33,7 +33,6 @@ struct Client {
     queue: Vec<Input>,
     lock: Option<Axis>,
     look: Option<Dir>,
-    ticks: u32,
     tool: usize,
 }
 
@@ -162,9 +161,6 @@ impl Hooks for Mod {
             c.active = !c.active;
             c.lock = None;
             c.queue.push(Input::Cancel);
-            let text = if c.active { "Axirizon active (1-7 : outils)" } else { "Axirizon desactive" };
-            drop(c);
-            let _ = host.show_action_bar(Text::literal(text));
             return;
         }
         if !c.active {
@@ -233,14 +229,23 @@ impl Hooks for Mod {
 
     fn client_tick_post(&self, host: &mut dyn ClientHost, _: &mut ClientTickPostEvent) {
         let look = host.camera().map(|c| dir_from_look(c.yaw, c.pitch));
-        let message = {
-            let mut c = lock(&self.client);
-            c.look = look;
-            c.ticks = c.ticks.wrapping_add(1);
-            (c.active && c.ticks % 20 == 0).then(|| format!("Axirizon : {:?}", Tool::HOTBAR[c.tool]))
+        lock(&self.client).look = look;
+    }
+
+    /// The tool list, in the top left corner, with the selected one marked.
+    fn render_gui_post(&self, _: &dyn ClientHost, event: &mut RenderGuiPostEvent<'_>) {
+        let (active, selected) = {
+            let c = lock(&self.client);
+            (c.active, c.tool)
         };
-        if let Some(text) = message {
-            let _ = host.show_action_bar(Text::literal(text));
+        if !active {
+            return;
+        }
+        event.draw.fill([2.0, 2.0, 96.0, 14.0 + 10.0 * Tool::HOTBAR.len() as f32], 0x90000000);
+        event.draw.text("Axirizon (B)", [6.0, 5.0], 0xFFFFD020, true);
+        for (i, tool) in Tool::HOTBAR.iter().enumerate() {
+            let (mark, color) = if i == selected { (">", 0xFF80E0FF) } else { (" ", 0xFFFFFFFF) };
+            event.draw.text(&format!("{mark} {} {tool:?}", i + 1), [6.0, 16.0 + 10.0 * i as f32], color, true);
         }
     }
 

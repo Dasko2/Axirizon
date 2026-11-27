@@ -18,7 +18,7 @@ cette version exacte.
 
 ## En jeu (solo, Overworld)
 
-**B** active ou désactive. Chiffres **1 à 7** : outil.
+**B** active ou désactive. Chiffres **1 à 7** : outil. La liste des outils s'affiche en haut à gauche.
 
 | Touche | Outil | Commandes |
 |---|---|---|
