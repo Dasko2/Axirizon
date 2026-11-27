@@ -8,11 +8,42 @@ on:
 permissions:
   contents: read
 
+env:
+  HORIZON_COMMIT: ae632edf48f6cae3ba52a5c81523ec712488c9cc
+
 jobs:
-  core:
+  hmod:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: rustup update stable --no-self-update
-      - run: cargo test
-
+        with:
+          path: axirizon
+      - uses: actions/checkout@v5
+        with:
+          repository: rdbtCVS/horizon
+          ref: ${{ env.HORIZON_COMMIT }}
+          path: horizon
+          persist-credentials: false
+      - name: Place the mod in the Horizon workspace
+        run: |
+          mkdir -p horizon/mods/axirizon
+          cp -r axirizon/Cargo.toml axirizon/src axirizon/tests horizon/mods/axirizon/
+          sed -i 's#\.horizon/sdk/api/crates/horizon-mod-api#../../crates/horizon-mod-api#' horizon/mods/axirizon/Cargo.toml
+          sed -i '0,/^members = \[/s##members = [\n    "mods/axirizon",#' horizon/Cargo.toml
+      - name: Compile and test against Horizon's mod API
+        working-directory: horizon
+        run: |
+          rustup toolchain install 1.99.1 --profile minimal
+          rustup override set 1.99.1
+          cargo test -p mod-axirizon
+      - name: Package and check the .hmod
+        run: |
+          mkdir dist
+          (cd axirizon && zip -r ../dist/axirizon.hmod horizon-mod.toml Cargo.toml src)
+          cd horizon
+          cargo run -p cargo-horizon-mod -- check ../dist/axirizon.hmod
+      - uses: actions/upload-artifact@v6
+        with:
+          name: axirizon-hmod
+          path: dist/axirizon.hmod
+          if-no-files-found: error
