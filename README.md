@@ -12,7 +12,7 @@ logique des outils et vérifie le paquet `.hmod`.
 2. Décompresser : il contient `axirizon.hmod`.
 3. L'ajouter dans la page Mods du launcher et autoriser les mods natifs.
 
-Version visée : Minecraft 26.3, commit Horizon `ae632ed` (source :
+Version visée : Minecraft 26.3, mise à jour du 20 novembre 11:18 UTC, commit `94bb847` (source :
 `rdbtCVS/horizon`). Le launcher compile le mod lui-même et a besoin du kit de
 cette version exacte.
 

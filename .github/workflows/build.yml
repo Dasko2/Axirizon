@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  HORIZON_COMMIT: ae632edf48f6cae3ba52a5c81523ec712488c9cc
+  HORIZON_COMMIT: 94bb8472ff9bd885773ec8e7ef4e83cf908c6bc8
 
 jobs:
   hmod:
